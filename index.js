@@ -24,6 +24,12 @@ db.insert(require("./data.json"));
 const cb = new Datastore();
 cb.insert(require("./calendars.json"));
 
+const ub = new Datastore();
+ub.insert(require("./units.json"));
+
+const rb = new Datastore();
+rb.insert(require("./sections.json"));
+
 // client side expects obj.id while DB provides obj._id
 function fixID(a){
 	a.id = a._id;
@@ -75,7 +81,9 @@ const allowedFields = [
 	"recurring",
 	"calendar",
 	"origin_id",
-	"series_end_date"
+	"series_end_date",
+	"units",
+	"section"
 ];
 
 app.put("/events/:id", (req, res, next) => {
@@ -193,5 +201,23 @@ app.post("/calendars", (req, res, next) => {
 			next(err);
 		else
 			res.send({ id: fixID(data).id });
+	});
+});
+
+app.get("/units", (req, res, next) => {
+	ub.find({}).sort({ order: 1 }).exec((err, data) => {
+	if (err)
+		next(err);
+	else
+		res.send(data.map(fixID));
+	});
+});
+
+app.get("/sections", (req, res, next) => {
+	rb.find({}).exec((err, data) => {
+	if (err)
+		next(err);
+	else
+		res.send(data.map(fixID));
 	});
 });
