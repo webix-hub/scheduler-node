@@ -153,7 +153,12 @@ app.delete("/events/:id", (req, res, next) => {
 });
 
 app.post("/events", (req, res, next) => {
-	db.insert(req.body, (err, data) => {
+	const event = {};
+	for (f in req.body){
+		if (allowedFields.indexOf(f) !== -1) event[f] = req.body[f];
+	}
+
+	db.insert(event, (err, data) => {
 		if (err) 
 			next(err);
 		else
